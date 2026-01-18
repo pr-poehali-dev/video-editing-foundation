@@ -1,10 +1,45 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
 
 const Index = () => {
+  const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    setTimeout(() => {
+      toast({
+        title: "Заявка отправлена! 🎉",
+        description: "Мы свяжемся с вами в ближайшее время.",
+      });
+      setIsSubmitting(false);
+      setIsDialogOpen(false);
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    }, 1000);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const features = [
     {
       icon: "Video",
@@ -152,7 +187,71 @@ const Index = () => {
             <button onClick={() => scrollToSection('instructors')} className="text-sm font-medium hover:text-primary transition-colors">Преподаватели</button>
             <button onClick={() => scrollToSection('reviews')} className="text-sm font-medium hover:text-primary transition-colors">Отзывы</button>
           </nav>
-          <Button>Начать обучение</Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>Начать обучение</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Записаться на курс</DialogTitle>
+                <DialogDescription>
+                  Заполните форму, и мы свяжемся с вами для подтверждения записи
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Ваше имя *</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Иван Иванов"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="ivan@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Телефон *</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+7 (999) 123-45-67"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message">Комментарий (необязательно)</Label>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    placeholder="Расскажите о своих целях и опыте в видеомонтаже..."
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    rows={4}
+                  />
+                </div>
+                <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                  {isSubmitting ? "Отправка..." : "Отправить заявку"}
+                  {!isSubmitting && <Icon name="Send" className="ml-2 h-4 w-4" />}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </header>
 
@@ -168,12 +267,76 @@ const Index = () => {
                 Ваш надежный старт в мире видеомонтажа. От новичка до профессионала с практическими заданиями и поддержкой экспертов.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="text-lg px-8" onClick={() => scrollToSection('program')}>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="lg" className="text-lg px-8">
+                      Записаться на курс
+                      <Icon name="ArrowRight" className="ml-2 h-5 w-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl">Записаться на курс</DialogTitle>
+                      <DialogDescription>
+                        Заполните форму, и мы свяжемся с вами для подтверждения записи
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Ваше имя *</Label>
+                        <Input
+                          id="name"
+                          name="name"
+                          placeholder="Иван Иванов"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="ivan@example.com"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Телефон *</Label>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="+7 (999) 123-45-67"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="message">Комментарий (необязательно)</Label>
+                        <Textarea
+                          id="message"
+                          name="message"
+                          placeholder="Расскажите о своих целях и опыте в видеомонтаже..."
+                          value={formData.message}
+                          onChange={handleInputChange}
+                          rows={4}
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                        {isSubmitting ? "Отправка..." : "Отправить заявку"}
+                        {!isSubmitting && <Icon name="Send" className="ml-2 h-4 w-4" />}
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+                <Button size="lg" variant="outline" className="text-lg px-8" onClick={() => scrollToSection('program')}>
                   Смотреть программу
-                  <Icon name="ArrowRight" className="ml-2 h-5 w-5" />
-                </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8">
-                  Узнать подробнее
                 </Button>
               </div>
               <div className="mt-10 flex items-center gap-8">
@@ -412,10 +575,74 @@ const Index = () => {
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
             Присоединяйтесь к нам и сделайте первые шаги к созданию профессиональных видеороликов
           </p>
-          <Button size="lg" variant="secondary" className="text-lg px-8">
-            Начать обучение
-            <Icon name="ArrowRight" className="ml-2 h-5 w-5" />
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" variant="secondary" className="text-lg px-8">
+                Записаться на курс
+                <Icon name="ArrowRight" className="ml-2 h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Записаться на курс</DialogTitle>
+                <DialogDescription>
+                  Заполните форму, и мы свяжемся с вами для подтверждения записи
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name-cta">Ваше имя *</Label>
+                  <Input
+                    id="name-cta"
+                    name="name"
+                    placeholder="Иван Иванов"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email-cta">Email *</Label>
+                  <Input
+                    id="email-cta"
+                    name="email"
+                    type="email"
+                    placeholder="ivan@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone-cta">Телефон *</Label>
+                  <Input
+                    id="phone-cta"
+                    name="phone"
+                    type="tel"
+                    placeholder="+7 (999) 123-45-67"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message-cta">Комментарий (необязательно)</Label>
+                  <Textarea
+                    id="message-cta"
+                    name="message"
+                    placeholder="Расскажите о своих целях и опыте в видеомонтаже..."
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    rows={4}
+                  />
+                </div>
+                <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                  {isSubmitting ? "Отправка..." : "Отправить заявку"}
+                  {!isSubmitting && <Icon name="Send" className="ml-2 h-4 w-4" />}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
 
